@@ -8,12 +8,15 @@ import {
   Modal,
 } from "react-native";
 import { useState } from "react";
+import CustomModal from "./components/CustomModal";
+import CustomInput from "./components/CustomInput";
 
 export default function App() {
   const [textItem, setTextItem] = useState("");
   const [itemList, setItemList] = useState([]);
   const [itemSelectedToDelete, setItemSelectedToDelete] = useState({});
   const [modalVisible, setModalVisible] = useState(false);
+  const [isSelected, setIsSelected] = useState(false);
 
   const onChangeTextHeadler = (text) => {
     setTextItem(text);
@@ -24,45 +27,50 @@ export default function App() {
       ...prevState,
       { id: Math.random().toString(), value: textItem },
     ]);
-    //console.log(ItemList);
     setTextItem("");
   };
 
   const renderListItem = ({ item }) => (
-    <View>
+    <View style={styles.itemList}>
       <Text>{item.value}</Text>
-      <Button title="x" />
+      <Button title="x" onPress={() => onSelectItemHandler(item.id)} />
     </View>
   );
+
+  const onSelectItemHandler = (id) => {
+    setModalVisible(!modalVisible);
+    setItemSelectedToDelete(itemList.find((item) => item.id === id));
+  };
+
+  const onDeleteItemHandler = () => {
+    setItemList(itemList.filter((item) => item.id !== itemSelectedToDelete.id));
+    setModalVisible(!modalVisible);
+  };
 
   return (
     <>
       <View style={styles.container}>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.textInput}
-            placeholder="Ingresar tarea"
-            onChangeText={onChangeTextHeadler}
-            value={textItem}
-          />
-          <Button title="Add" color="#841584" onPress={addItemToList} />
-        </View>
+        <CustomInput
+          placeholderProp="Igrense una tarea"
+          textItemProp={textItem}
+          onChangeTextHandlerEvent={onChangeTextHeadler}
+          addItemToListEvent={addItemToList}
+          isSelectProp={isSelected}
+          setIsSelectProp={setIsSelected}
+        />
         <FlatList
           data={itemList}
           renderItem={renderListItem}
           keyExtractor={(item) => item.id}
         />
       </View>
-      <Modal animationType="slide" visible={true}>
-        <View style={styles.modalMessageContainer}>
-          <Text>Se eliminará: </Text>
-          <Text>{itemSelectedToDelete.value}</Text>
-        </View>
-        <View style={styles.modalButtonContainer}>
-          <Button title="Cancelar" color="#ccc" />
-          <Button title="Si, eliminar" color="#ef233c" />
-        </View>
-      </Modal>
+      <CustomModal
+        animationTypeProp="slide"
+        isVisibleProp={modalVisible}
+        itemSelectedProp={itemSelectedToDelete}
+        onDeleteItemHandlerEvent={onDeleteItemHandler}
+        setModalVisibleEvent={setModalVisible}
+      />
     </>
   );
 }
@@ -73,15 +81,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 30,
   },
-  inputContainer: {
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-  },
-  textInput: {
-    width: 200,
-    borderBottomColor: "#ccc",
-    borderBottomWidth: 1,
-  },
   itemList: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -90,14 +89,5 @@ const styles = StyleSheet.create({
     margin: 10,
     backgroundColor: "#a2d2ff",
     borderRadius: 10,
-  },
-  modalMessageContainer: {
-    marginTop: 50,
-    alignItems: "center",
-  },
-  modalButtonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    paddingTop: 20,
   },
 });

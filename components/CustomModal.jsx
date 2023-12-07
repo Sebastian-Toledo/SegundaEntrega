@@ -10,7 +10,7 @@ const CustomModal = ({
   return (
     <Modal animationType={animationTypeProp} visible={isVisibleProp}>
       <View style={styles.modalMessageContainer}>
-        <Text>Se eliminará: </Text>
+        <Text>Desea eliminar? </Text>
         <Text>{itemSelectedProp.value}</Text>
       </View>
       <View style={styles.modalButtonContainer}>
@@ -20,7 +20,7 @@ const CustomModal = ({
           onPress={() => setModalVisibleEvent(!isVisibleProp)}
         />
         <Button
-          title="Si, eliminar"
+          title="Eliminar"
           color="#ef233c"
           onPress={onDeleteItemHandlerEvent}
         />
