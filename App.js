@@ -10,13 +10,13 @@ import {
 import { useState } from "react";
 import CustomModal from "./components/CustomModal";
 import CustomInput from "./components/CustomInput";
+import Checkbox from "expo-checkbox";
 
 export default function App() {
   const [textItem, setTextItem] = useState("");
   const [itemList, setItemList] = useState([]);
   const [itemSelectedToDelete, setItemSelectedToDelete] = useState({});
   const [modalVisible, setModalVisible] = useState(false);
-  const [isSelected, setIsSelected] = useState(false);
 
   const onChangeTextHeadler = (text) => {
     setTextItem(text);
@@ -25,13 +25,20 @@ export default function App() {
   const addItemToList = () => {
     setItemList((prevState) => [
       ...prevState,
-      { id: Math.random().toString(), value: textItem },
+      { id: Math.random().toString(), value: textItem, isSelected: false },
     ]);
     setTextItem("");
   };
 
   const renderListItem = ({ item }) => (
-    <View style={styles.itemList}>
+    <View
+      style={item.isSelected ? styles.checkInputCountainer : styles.itemList}
+    >
+      <Checkbox
+        value={item.isSelected}
+        onValueChange={(newValue) => onCheckboxChangeHandler(item.id, newValue)}
+        style={styles.checkbox}
+      />
       <Text>{item.value}</Text>
       <Button title="x" onPress={() => onSelectItemHandler(item.id)} />
     </View>
@@ -47,6 +54,14 @@ export default function App() {
     setModalVisible(!modalVisible);
   };
 
+  const onCheckboxChangeHandler = (id, newValue) => {
+    setItemList((prevList) =>
+      prevList.map((item) =>
+        item.id === id ? { ...item, isSelected: newValue } : item
+      )
+    );
+  };
+
   return (
     <>
       <View style={styles.container}>
@@ -55,8 +70,6 @@ export default function App() {
           textItemProp={textItem}
           onChangeTextHandlerEvent={onChangeTextHeadler}
           addItemToListEvent={addItemToList}
-          isSelectProp={isSelected}
-          setIsSelectProp={setIsSelected}
         />
         <FlatList
           data={itemList}
@@ -89,5 +102,17 @@ const styles = StyleSheet.create({
     margin: 10,
     backgroundColor: "#a2d2ff",
     borderRadius: 10,
+  },
+  checkInputCountainer: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    marginBottom: 10,
+    backgroundColor: "#00FF40",
+  },
+  checkbox: {
+    alignSelf: "center",
+  },
+  strikethroughText: {
+    textDecorationLine: "line-through",
   },
 });

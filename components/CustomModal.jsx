@@ -13,6 +13,7 @@ const CustomModal = ({
         <Text>Desea eliminar? </Text>
         <Text>{itemSelectedProp.value}</Text>
       </View>
+
       <View style={styles.modalButtonContainer}>
         <Button
           title="Cancelar"
